@@ -43,11 +43,35 @@ async def update_user_nicknames(guild_id: int):
             try:
                 await member.edit(nick=nickname)
             except nextcord.errors.Forbidden:
-                # "Can't edit owner of server."
-                ...
-
-
-# Connect to the database
+                # Add the running_time variable declaration
+                running_time = None
+                
+                # Update the update_user_nicknames task to stop the timer
+                @tasks.loop(seconds=10)
+                async def update_user_nicknames(guild_id: int):
+                    guild = bot.get_guild(guild_id)
+                
+                    for member in guild.members:
+                        if not member.bot:
+                            user_id = str(member.id)
+                
+                            # Fetch the user's total value and RAP from the database
+                            c.execute("SELECT SUM(value) FROM items WHERE user_id=?", (user_id,))
+                            total_value = c.fetchone()[0] or 0
+                            c.execute("SELECT SUM(rap) FROM items WHERE user_id=?", (user_id,))
+                            total_rap = c.fetchone()[0] or 0
+                
+                            # Update the user's nickname with the total value and RAP
+                            nickname = f"{member.name} ({total_value:,} | {total_rap:,})"
+                
+                            try:
+                                await member.edit(nick=nickname)
+                            except nextcord.errors.Forbidden:
+                                # "Can't edit owner of server."
+                                ...
+                
+                            # Stop the timer
+                            running_time = datetime.datetime.now() - bot.start_time
 conn = sqlite3.connect(r"databases\items.db")
 c = conn.cursor()
 
@@ -107,6 +131,8 @@ async def restart(interaction: nextcord.Interaction):
             name=f"Item {i}",
             value=f"**NAME**: {item.item_name}\n**RAP**: {item.rap}\n**VALUE**: {item.default_value}",
             inline=False,
+# Add the running_time variable declaration
+running_time = None
         )
         i += 1
         total_value += item.default_value
