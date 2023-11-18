@@ -2,7 +2,8 @@ import datetime
 
 import nextcord
 import nextcord.ext.tasks as tasks
-from main import update_user_nicknames
+import nextcord
+from main import bot
 from nextcord.ext import commands
 
 
@@ -21,3 +22,5 @@ async def on_ready():
     bot.start_time = datetime.datetime.now()
     update_user_nicknames.start(1045873228729548860)
 import nextcord.ext.tasks as tasks
+import nextcord
+from main import bot
