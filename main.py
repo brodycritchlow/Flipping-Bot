@@ -93,6 +93,14 @@ async def restart(interaction: nextcord.Interaction):
     c.execute("DELETE FROM items WHERE user_id = ?", (interaction.user.id,))
     ci.execute("DELETE FROM item_claims WHERE user_id = ?", (interaction.user.id,))
 
+    embed = update_user_nicknames_task(interaction)
+
+    await interaction.send(embed=embed)
+
+    # Commit changes to database
+    conn.commit()
+
+def update_user_nicknames_task(interaction):
     items = get_rand()
 
     # Create embed
@@ -120,11 +128,7 @@ async def restart(interaction: nextcord.Interaction):
         )
 
     embed.set_footer(text=f"TOTAL VALUE: {total_value:,}")
-
-    await interaction.send(embed=embed)
-
-    # Commit changes to database
-    conn.commit()
+    return embed
 
 
 @bot.slash_command()
@@ -243,17 +247,11 @@ async def duel(
 
     match side.lower():
         case "h":
-            side = 1
-            chc = "Heads"
-            opp = "Tails"
+            delete_user_items()
         case "head":
-            side = 1
-            chc = "Heads"
-            opp = "Tails"
+            delete_user_items()
         case "heads":
-            side = 1
-            chc = "Heads"
-            opp = "Tails"
+            delete_user_items()
         case _:
             side = 0
             chc = "Tails"
@@ -335,6 +333,11 @@ async def duel(
 
     # Commit changes to database
     conn.commit()
+
+def delete_user_items():
+    side = 1
+    chc = "Heads"
+    opp = "Tails"
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
