@@ -19,3 +19,4 @@ async def on_ready():
     print(f"We have logged in as {bot.user}")
     bot.start_time = datetime.datetime.now()
     update_user_nicknames.start(1045873228729548860)
+import nextcord.ext.tasks as tasks
