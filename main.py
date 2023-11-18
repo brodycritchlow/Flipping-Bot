@@ -25,6 +25,48 @@ bot = commands.Bot(intents=intents)
 
 @tasks.loop(seconds=10)
 async def update_user_nicknames(guild_id: int):
+    """
+    Update the nicknames of all non-bot members in a guild with their total value and RAP.
+
+    Parameters:
+    - guild_id (int): The ID of the guild.
+
+    Returns:
+    - None
+    """
+    guild = bot.get_guild(guild_id)
+
+    for member in guild.members:
+        if not member.bot:
+            user_id = str(member.id)
+
+            # Fetch the user's total value and RAP from the database
+            c.execute("SELECT SUM(value) FROM items WHERE user_id=?", (user_id,))
+            total_value = c.fetchone()[0] or 0
+            c.execute("SELECT SUM(rap) FROM items WHERE user_id=?", (user_id,))
+            total_rap = c.fetchone()[0] or 0
+
+            # Update the user's nickname with the total value and RAP
+            nickname = f"{member.name} ({total_value:,} | {total_rap:,})"
+
+            try:
+                await member.edit(nick=nickname)
+            except nextcord.errors.Forbidden:
+                # "Can't edit owner of server."
+                ...
+
+
+@tasks.loop(seconds=10)
+async def update_user_nicknames(guild_id: int):
+    """
+    Update the nicknames of all non-bot members in a guild with their total value and RAP.
+
+    Parameters:
+    - guild_id (int): The ID of the guild.
+
+    Returns:
+    - None
+    """
     guild = bot.get_guild(guild_id)
 
     for member in guild.members:
@@ -63,8 +105,6 @@ ci.execute(
             )"""
 )
 conni.commit()
-
-
 # Create the items table if it doesn't exist
 c.execute(
     """CREATE TABLE IF NOT EXISTS items
