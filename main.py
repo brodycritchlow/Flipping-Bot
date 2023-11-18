@@ -63,8 +63,6 @@ ci.execute(
             )"""
 )
 conni.commit()
-
-
 # Create the items table if it doesn't exist
 c.execute(
     """CREATE TABLE IF NOT EXISTS items
@@ -241,23 +239,22 @@ async def duel(
 ):
     user_id = interaction.user.id
 
-    match side.lower():
-        case "h":
-            side = 1
-            chc = "Heads"
-            opp = "Tails"
-        case "head":
-            side = 1
-            chc = "Heads"
-            opp = "Tails"
-        case "heads":
-            side = 1
-            chc = "Heads"
-            opp = "Tails"
-        case _:
-            side = 0
-            chc = "Tails"
-            opp = "Heads"
+    if side.lower() == "h":
+        side = 1
+        chc = "Heads"
+        opp = "Tails"
+    elif side.lower() == "head":
+        side = 1
+        chc = "Heads"
+        opp = "Tails"
+    elif side.lower() == "heads":
+        side = 1
+        chc = "Heads"
+        opp = "Tails"
+    else:
+        side = 0
+        chc = "Tails"
+        opp = "Heads"
 
     # Retrieve items from database
     if items:
