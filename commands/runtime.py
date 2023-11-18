@@ -1,7 +1,8 @@
 import datetime
 
 import nextcord
-from main import bot
+import nextcord.ext.tasks as tasks
+from main import update_user_nicknames
 from nextcord.ext import commands
 
 
