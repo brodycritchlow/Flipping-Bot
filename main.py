@@ -333,5 +333,6 @@ async def duel(
     # Commit changes to database
     conn.commit()
 
+
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot.run(TOKEN)
